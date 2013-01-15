@@ -5,10 +5,6 @@ class Log
   
   constructor: (@fname) ->
     
-    # Get the native file system object
-    window.requestFileSystem = window.requestFileSystem or window.webkitRequestFileSystem
-    window.requestFileSystem(window.TEMPORARY, @logSize, @initialize, @errorHandler)
-    
     # Boolean to check if writer is ready
     @ready = false
     
@@ -21,10 +17,33 @@ class Log
     # Custom event for when Log is ready to write
     @readyEvt = document.createEvent("HTMLEvents")
     @readyEvt.initEvent("log:ready", false, true)
+    
+    @removeEvt = document.createEvent("HTMLEvents")
+    @removeEvt.initEvent("log:remove", false, true)
+    
+    # Get the native file system object
+    window.requestFileSystem = window.requestFileSystem or window.webkitRequestFileSystem
+    window.requestFileSystem(window.TEMPORARY, @logSize, @initialize1, @errorHandler)
   
   # Initialize the FileSystem object
-  initialize: (fs) =>
+  initialize1: (fs) =>
+    @el.addEventListener('log:remove', =>
+      @el.removeEventListener('log:remove', arguments.callee, false)
+      @initialize2(fs)
+    , false)
     
+    # First remove a file
+    fs.root.getFile(@fname, {create: false}, (fileEntry) =>
+      fileEntry.remove( =>
+        @el.dispatchEvent(@removeEvt)
+      , =>
+        @el.dispatchEvent(@removeEvt)
+      )
+    , =>
+      @el.dispatchEvent(@removeEvt)
+    )
+    
+  initialize2: (fs) =>
     fs.root.getFile(@fname, {create: true}, (fileEntry) =>
       
       # Set up file writer on the file entry object
@@ -56,6 +75,7 @@ class Log
           div.style.left = '10px'
           
           document.body.appendChild(div)
+          
         , false)
         
         # Flip it.

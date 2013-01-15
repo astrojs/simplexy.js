@@ -47,9 +47,6 @@ medsmooth = (image, nx, ny) ->
   for i in [0..nygrid - 1]
     ylo[i] = Math.max(ygrid[i] - sp, 0)
     yhi[i] = Math.min(ygrid[i] + sp, ny - 1)
-
-  l.writeArray(ygrid)
-  l.finish()
   
   # NOTE: xgrid and ygrid OK
   # NOTE: xlo and xhi OK
@@ -83,7 +80,10 @@ medsmooth = (image, nx, ny) ->
   # arr looks good right here.
   # TODO: fix grid, something doesn't match from C implementation
   # console.log grid
-        
+  
+  l.writeArray(grid)
+  l.finish()
+  
   # TODO: free xlo, ylo, xhi, yhi, arr
   return
   
