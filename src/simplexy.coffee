@@ -11,7 +11,6 @@ simplexy.parameters =
   maxnpeaks: 10000
   maxsize: 2000
   halfbox: 100
-  high_water_mark: 0
-  past_data: null
+
 
 @astro.simplexy = simplexy

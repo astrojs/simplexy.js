@@ -5,7 +5,7 @@ describe 'extract', ->
     fits = null
     
     xhr = new XMLHttpRequest()
-    xhr.open('GET', 'data/m101.fits')
+    xhr.open('GET', 'data/cutout.fits')
     xhr.responseType = 'arraybuffer'
     xhr.onload = (e) =>
       fits = new astro.FITS.File(xhr.response)
@@ -14,5 +14,9 @@ describe 'extract', ->
     waitsFor -> return fits?
     
     runs ->
-      fits.getData()
-      astro.simplexy.extract(fits.getHDU())
+      dataunit = fits.getDataUnit()
+      width = dataunit.width
+      height = dataunit.height
+      dataunit.getFrameAsync(undefined, (pixels) ->
+        astro.simplexy.extract(pixels, width, height)
+      )

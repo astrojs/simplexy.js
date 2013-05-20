@@ -1,3 +1,5 @@
 .DS_Store
 .npmignore
 node_modules/
+astrometry.net-0.40/
+*.fits
